@@ -25,6 +25,8 @@ The system utilizes a dual-model, triple-agent approach:
 ### Step 1: Trigger the vLLM Models
 We run two separate containers to handle the Vision and Reasoning tasks. In case you use gated models, ensure your `HF_TOKEN` is set.
 
+In the steps below, we are using two models served by two vLLM instances, and notice the `--gpu-memory-utilization` flag; this is to ensure that we can fit both models into GPU memory. Now, why two models? Well, the VL model excels at VL 🙌 no wonder. The larger model is a strong reasoning model and will do great with drafting an amazing trip report based on the transcribed results. 
+
 #### Step 1.1: Start the Vision Model (The Eyes) - Qwen2-VL
 ```bash
 # 1. Start the Vision Model (The Eyes) - Qwen2-VL
@@ -36,7 +38,7 @@ sudo docker run -d -it --ipc=host --network=host --privileged \
 -e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 \
 vllm/vllm-openai-rocm:latest \
 Qwen/Qwen2-VL-7B-Instruct --port 8001 \
---trust-remote-code --gpu-memory-utilization 0.8 \
+--trust-remote-code --gpu-memory-utilization 0.2 \
 --max-model-len 65536 --limit-mm-per-prompt '{"image": 55}' \
 --max-num-seqs 64 --max-num-batched-tokens 65536 \
 --enable-auto-tool-choice --tool-call-parser=qwen3_xml --host 0.0.0.0
@@ -51,7 +53,7 @@ sudo docker run -d -it --ipc=host --network=host --privileged \
 -e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 \
 vllm/vllm-openai-rocm:latest \
 --model Qwen/Qwen3-Coder-30B-A3B-Instruct \
---port 8000 --trust-remote-code --gpu-memory-utilization 0.8 \
+--port 8000 --trust-remote-code --gpu-memory-utilization 0.75 \
 --max-model-len 231072 --max-num-seqs 16 \
 --enable-auto-tool-choice --tool-call-parser qwen3_coder --host 0.0.0.0
 ```

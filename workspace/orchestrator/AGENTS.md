@@ -24,7 +24,7 @@ Once all transcriber-agent tasks are status: completed, perform the Handoff:
         1. Architecture (P/D Disaggregation, NIXL)
         2. Benchmarks (MI300x vs H100)
         3. Strategic Insights (Inference Trends). 
-      Save to /home/jejohnma/.openclaw/workspace/reports/conference_report_[timestamp].md. DATA: [INSERT COLLECTED TEXT HERE]"
+      Save to \<openclaw_path>/workspace/reports/conference_report_[timestamp].md. DATA: [INSERT COLLECTED TEXT HERE]"
 
 # ANTI-REPETITION RULE
 If a transcription contains more than 3 identical consecutive lines, TRUNCATE the text immediately. Do not process more than 200 words per transcription. Prioritize spawning the next batch over reading the full text of previous results.
