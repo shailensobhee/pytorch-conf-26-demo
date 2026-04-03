@@ -1,0 +1,13 @@
+{
+  "plugins": {
+    "allow": [
+      "acpx",
+      "openshell"
+    ]
+  }
+}
+{
+  "exec": {
+    "policy": "allow"
+  }
+}
