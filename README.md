@@ -23,11 +23,10 @@ The system utilizes a dual-model, triple-agent approach:
 ## 🚀 Setup & Replication
 
 ### Step 1: Trigger the vLLM Models
-We run two separate containers to handle the Vision and Reasoning tasks. Ensure your `HF_TOKEN` is set.
+We run two separate containers to handle the Vision and Reasoning tasks. In case you use gated models, ensure your `HF_TOKEN` is set.
 
+#### Step 1.1: Start the Vision Model (The Eyes) - Qwen2-VL
 ```bash
-export HF_TOKEN=your_huggingface_token_here
-
 # 1. Start the Vision Model (The Eyes) - Qwen2-VL
 sudo docker run -d -it --ipc=host --network=host --privileged \
 --device=/dev/kfd --device=/dev/dri --name vision_demo_check_ocr \
@@ -41,8 +40,10 @@ Qwen/Qwen2-VL-7B-Instruct --port 8001 \
 --max-model-len 65536 --limit-mm-per-prompt '{"image": 55}' \
 --max-num-seqs 64 --max-num-batched-tokens 65536 \
 --enable-auto-tool-choice --tool-call-parser=qwen3_xml --host 0.0.0.0
+```
 
-# 2. Start the Reasoning Model (The Brain) - Qwen3-Coder
+#### Step 1.2: Start the Reasoning Model (The Brain) - Qwen3-Coder
+```bash
 sudo docker run -d -it --ipc=host --network=host --privileged \
 --device=/dev/kfd --device=/dev/dri --name vision_demo_check \
 -e HF_TOKEN=${HF_TOKEN} \
@@ -57,10 +58,9 @@ vllm/vllm-openai-rocm:latest \
 
 
 ### Step 2: Prepare the Workspace
-Place your conference photos into the specific workspace directory.
+Place your gazillion conference photos you took, yes the ones you never intended to watch again, a directory within your workspace directory. Your workspace directory may most likely be within the `/home/<username>.openclaw/` folder. So, don't worry, even if you won't consult the photos again, OpenClaw will do that for you. 
 
 ```bash
-# Example directory setup
 mkdir -p <path>/pytorch_conference/
 cp ~/my_photos/*.jpg <path>/pytorch_conference/
 ```
@@ -84,15 +84,14 @@ OPENCLAW_AUTO_APPROVE=true openclaw tui --token "claw123"
 #### 📝 Running the Demo
 Inside the OpenClaw TUI, run the following commands to trigger the pipeline:
 
-Reset the session: `/reset`
-Select the Orchestrator: `/agent orchestrator`
-Execute the Prompt:
-
 1. **Reset the session:** `/reset`
 2. **Select the Orchestrator:** `/agent orchestrator`
-3. **Execute the Prompt:** Transcribe each and every images in <path>/pytorch_conference/ by individually invoking transcriber-agent. Generate a structured technical report from these transcriptions and save it.
+3. **Execute the Prompt:** "Transcribe each and every image in `<path>/pytorch_conference/` by individually invoking `transcriber-agent`. Generate a structured technical report from these transcriptions and save it."
 
-"Transcribe each and every image in <path>/pytorch_conference/ by individually invoking transcriber-agent. Generate a structured technical report from these transcriptions and save it."
+Can you believe it? Just a simple sentence, simple command, and you have a small army of agents that get to work, to view these images you wouldn't ever watch, understand them, and write you a summary (aka the Trip Report) for you? 
+
+Here's a sample of what you can expect:
+
 
 ### 🔧 Troubleshooting & Maintenance
 If you encounter issues or change configurations, use these commands to clean the environment:
