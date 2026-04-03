@@ -7,7 +7,7 @@
   "models": {
     "providers": {
       "vllm-coder": {
-        "baseUrl": "http://134.199.199.201:8000/v1",
+        "baseUrl": "http://VM1:8000/v1",
         "apiKey": "local-vllm",
         "api": "openai-responses",
         "models": [
@@ -39,7 +39,7 @@
       "model": {
         "primary": "vllm-coder/Qwen/Qwen3-Coder-30B-A3B-Instruct"
       },
-      "workspace": "/home/jejohnma/.openclaw/workspace",
+      "workspace": "<path>/workspace",
       "maxConcurrent": 4,
       "subagents": {
         "maxConcurrent": 8,
@@ -50,8 +50,8 @@
       {
         "id": "orchestrator-agent",
         "name": "Orchestrator",
-        "workspace": "/home/jejohnma/.openclaw/workspace/orchestrator",
-        "agentDir": "/home/jejohnma/.openclaw/agents/orchestrator-agent/agent",
+        "workspace": "<path>/orchestrator",
+        "agentDir": "<path>/agents/orchestrator-agent/agent",
         "model": "vllm-coder/Qwen/Qwen3-Coder-30B-A3B-Instruct",
         "subagents": {
           "allowAgents": [
@@ -71,8 +71,8 @@
       {
         "id": "transcriber-agent",
         "name": "Transcriber",
-        "workspace": "/home/jejohnma/.openclaw/workspace/orchestrator",
-        "agentDir": "/home/jejohnma/.openclaw/agents/transcriber-agent/agent",
+        "workspace": "<path>/workspace/orchestrator",
+        "agentDir": "<path>/agents/transcriber-agent/agent",
         "model": "vllm-vision/Qwen/Qwen2-VL-7B-Instruct",
         "tools": {
           "allow": [
@@ -83,8 +83,8 @@
       {
         "id": "report-generator",
         "name": "Report Generator",
-        "workspace": "/home/jejohnma/.openclaw/workspace/orchestrator",
-        "agentDir": "/home/jejohnma/.openclaw/agents/report-generator/agent",
+        "workspace": "<path>/workspace/orchestrator",
+        "agentDir": "<path>/agents/report-generator/agent",
         "model": "vllm-coder/Qwen/Qwen3-Coder-30B-A3B-Instruct",
         "tools": {
           "allow": [
