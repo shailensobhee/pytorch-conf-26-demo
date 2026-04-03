@@ -3,7 +3,7 @@
 
 Ever attend a technical conference, take hundreds of photos of slides, and then let them rot in your camera roll? When it's time to write that "Trip Report" to share with your teammates, you're stuck scrolling through a disorganized mess of blurry images.
 
-**OpenClaw** is here solves this. This demo uses a multi-agent orchestration layer combined with state-of-the-art Vision Language Models (VLM) and Reasoning models to automatically transcribe your conference photos and synthesize them into a structured, professional technical report.
+**OpenClaw🦞** is here solves this. This demo uses a multi-agent orchestration layer combined with state-of-the-art Vision Language Models (VLM) and Reasoning models to automatically transcribe your conference photos and synthesize them into a structured, professional technical report.
 
 ---
 
