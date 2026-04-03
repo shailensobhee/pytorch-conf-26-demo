@@ -58,7 +58,7 @@ vllm/vllm-openai-rocm:latest \
 ```
 
  -->
-We chose `stepfun-ai/Step3-VL-10B` based on the tests as seen in the graphs on HuggingFace. It is a recent 2026 model and it has superior capabilities for perception (e.g OCR) which is needed for understanding our conference photos. 
+We chose `stepfun-ai/Step3-VL-10B` based on the tests as seen in the charts on [HuggingFace](https://huggingface.co/stepfun-ai/Step3-VL-10B). It is a recent 2026 model and it has superior capabilities for perception (e.g OCR) which is needed for understanding our conference photos. 
 ```bash
 sudo docker run -d -it \
   --name vision_demo_check_ocr \
@@ -80,7 +80,8 @@ sudo docker run -d -it \
   --enable-auto-tool-choice \
   --tool-call-parser qwen3_xml
 ```
-#### Step 1.2: Start the Reasoning Model (The Brain) - Qwen3-Coder
+#### Step 1.2: Start the Reasoning Model (The Brain) - Qwen3.5-35B
+`Qwen/Qwen3.5-35B-A3B` is a no-brainer choice here. It's a very strong, very popular state-of-the-art model. Our GPUs love running these great models!
 ```bash
 sudo docker run -d -it \
   --name vision_demo_check \
@@ -100,12 +101,6 @@ sudo docker run -d -it \
   --enable-auto-tool-choice \
   --tool-call-parser qwen3_coder
 ```
-
-
-
-
-
-
 
 
 ### Step 2: Prepare the Workspace
