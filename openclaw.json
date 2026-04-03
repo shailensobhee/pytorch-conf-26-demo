@@ -1,0 +1,129 @@
+{
+  "meta": {
+    "lastTouchedVersion": "2026.3.31",
+    "lastTouchedAt": "2026-04-02T20:02:32.546Z"
+  },
+  "approvals": {},
+  "models": {
+    "providers": {
+      "vllm-coder": {
+        "baseUrl": "http://134.199.199.201:8000/v1",
+        "apiKey": "local-vllm",
+        "api": "openai-responses",
+        "models": [
+          {
+            "id": "Qwen/Qwen3-Coder-30B-A3B-Instruct",
+            "name": "Qwen3-Coder"
+          }
+        ]
+      },
+      "vllm-vision": {
+        "baseUrl": "http://localhost:8001/v1",
+        "apiKey": "local-vllm",
+        "api": "openai-responses",
+        "models": [
+          {
+            "id": "Qwen/Qwen2-VL-7B-Instruct",
+            "name": "Qwen-Vision",
+            "input": [
+              "text",
+              "image"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "vllm-coder/Qwen/Qwen3-Coder-30B-A3B-Instruct"
+      },
+      "workspace": "/home/jejohnma/.openclaw/workspace",
+      "maxConcurrent": 4,
+      "subagents": {
+        "maxConcurrent": 8,
+        "announceTimeoutMs": 300000
+      }
+    },
+    "list": [
+      {
+        "id": "orchestrator-agent",
+        "name": "Orchestrator",
+        "workspace": "/home/jejohnma/.openclaw/workspace/orchestrator",
+        "agentDir": "/home/jejohnma/.openclaw/agents/orchestrator-agent/agent",
+        "model": "vllm-coder/Qwen/Qwen3-Coder-30B-A3B-Instruct",
+        "subagents": {
+          "allowAgents": [
+            "transcriber-agent",
+            "report-generator"
+          ]
+        },
+        "tools": {
+          "allow": [
+            "group:fs",
+            "exec",
+            "sessions_spawn",
+            "subagents"
+          ]
+        }
+      },
+      {
+        "id": "transcriber-agent",
+        "name": "Transcriber",
+        "workspace": "/home/jejohnma/.openclaw/workspace/orchestrator",
+        "agentDir": "/home/jejohnma/.openclaw/agents/transcriber-agent/agent",
+        "model": "vllm-vision/Qwen/Qwen2-VL-7B-Instruct",
+        "tools": {
+          "allow": [
+            "group:fs"
+          ]
+        }
+      },
+      {
+        "id": "report-generator",
+        "name": "Report Generator",
+        "workspace": "/home/jejohnma/.openclaw/workspace/orchestrator",
+        "agentDir": "/home/jejohnma/.openclaw/agents/report-generator/agent",
+        "model": "vllm-coder/Qwen/Qwen3-Coder-30B-A3B-Instruct",
+        "tools": {
+          "allow": [
+            "group:fs"
+          ]
+        }
+      }
+    ]
+  },
+  "tools": {
+    "allow": [
+      "group:web",
+      "group:fs",
+      "exec",
+      "sessions_spawn",
+      "subagents"
+    ],
+    "exec": {
+      "security": "full",
+      "ask": "off"
+    }
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto",
+    "restart": true,
+    "ownerDisplay": "raw"
+  },
+  "gateway": {
+    "port": 18789,
+    "mode": "local",
+    "auth": {
+      "token": "claw123"
+    }
+  },
+  "wizard": {
+    "lastRunAt": "2026-04-02T20:02:32.540Z",
+    "lastRunVersion": "2026.3.31",
+    "lastRunCommand": "doctor",
+    "lastRunMode": "local"
+  }
+}
