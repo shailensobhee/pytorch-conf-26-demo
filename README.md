@@ -27,9 +27,8 @@ We run two separate containers to handle the Vision and Reasoning tasks. In case
 
 In the steps below, we are using two models served by two vLLM instances, and notice the `--gpu-memory-utilization` flag; this is to ensure that we can fit both models into GPU memory. Now, why two models? Well, the VL model excels at VL 🙌 no wonder. The larger model is a strong reasoning model and will do great with drafting an amazing trip report based on the transcribed results. 
 
-#### Step 1.1: Start the Vision Model (The Eyes) - Qwen2-VL
-```bash
-# 1. Start the Vision Model (The Eyes) - Qwen2-VL
+#### Step 1.1: Start the Vision Model (The Eyes) - [Step3-VL-10B](https://huggingface.co/stepfun-ai/Step3-VL-10B)
+<!-- ```bash
 sudo docker run -d -it --ipc=host --network=host --privileged \
 --device=/dev/kfd --device=/dev/dri --name vision_demo_check_ocr \
 -v <path>:/workspace \
@@ -57,6 +56,56 @@ vllm/vllm-openai-rocm:latest \
 --max-model-len 231072 --max-num-seqs 16 \
 --enable-auto-tool-choice --tool-call-parser qwen3_coder --host 0.0.0.0
 ```
+
+ -->
+We chose `stepfun-ai/Step3-VL-10B` based on the tests as seen in the graphs on HuggingFace. It is a recent 2026 model and it has superior capabilities for perception (e.g OCR) which is needed for understanding our conference photos. 
+```bash
+sudo docker run -d -it \
+  --name vision_demo_check_ocr \
+  --ipc=host \
+  --network=host \
+  --privileged \
+  --device=/dev/kfd \
+  --device=/dev/dri \
+  -v <path>/workspace:/workspace \
+  -e PYTORCH_ALLOC_CONF=expandable_segments:True \
+  -e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 \
+  vllm/vllm-openai-rocm:latest \
+  stepfun-ai/Step3-VL-10B \
+  --port 8001 \
+  --trust-remote-code \
+  --gpu-memory-utilization 0.2 \
+  --max-model-len 40960 \
+  --limit-mm-per-prompt '{"image": 10}' \
+  --enable-auto-tool-choice \
+  --tool-call-parser qwen3_xml
+```
+#### Step 1.2: Start the Reasoning Model (The Brain) - Qwen3-Coder
+```bash
+sudo docker run -d -it \
+  --name vision_demo_check \
+  --ipc=host \
+  --network=host \
+  --privileged \
+  --device=/dev/kfd \
+  --device=/dev/dri \
+  --shm-size 16g \
+  -e PYTORCH_ALLOC_CONF=expandable_segments:True \
+  vllm/vllm-openai-rocm:latest \
+  Qwen/Qwen3.5-35B-A3B \
+  --port 8000 \
+  --trust-remote-code \
+  --gpu-memory-utilization 0.75 \
+  --max-model-len 32768 \
+  --enable-auto-tool-choice \
+  --tool-call-parser qwen3_coder
+```
+
+
+
+
+
+
 
 
 ### Step 2: Prepare the Workspace
