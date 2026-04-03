@@ -91,7 +91,16 @@ Inside the OpenClaw TUI, run the following commands to trigger the pipeline:
 Can you believe it? Just a simple sentence, simple command, and you have a small army of agents that get to work, to view these images you wouldn't ever watch, understand them, and write you a summary (aka the Trip Report) for you? 
 
 Here's a sample of what you can expect:
+![Trip Report Sample image](assets/report_sample.png)
 
+
+### The Useful OpenClaw Dashboard
+The OpenClaw Dashboard is a local web-based "mission control" that offers a visual alternative to the standard terminal interface. It features real-time thought-tracing to monitor agent logic, a graphical skill manager for ClawHub integrations, and detailed resource monitoring for performance tracking. Accessed via openclaw dashboard at `localhost:18789`, it is the primary tool for debugging complex agent loops and inspecting interaction logs without manually sifting through raw JSON data.
+
+There you can track your tokens consumption and usage which is pretty useful. Especially, if you are using local models in the AMD Developer Cloud, you could compare with the potential costs, if you were to use APIs from intelligence providers. 
+
+Here's what you can expect:
+![Dashboard View](assets/dashboard.png)
 
 ### 🔧 Troubleshooting & Maintenance
 If you encounter issues or change configurations, use these commands to clean the environment:
@@ -123,3 +132,4 @@ openclaw devices approve <YOUR_DEVICE_ID>
 ## 📅 Updates
 
 **April 3**: Added support for Gemma 4 (31B) as an alternative reasoning engine and optimized vLLM parameters for higher batch processing of images.
+
