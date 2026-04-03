@@ -1,4 +1,5 @@
-# 📸 OpenClaw Conference Intelligence Demo
+# OpenClaw Lens-to-Log:
+### 📸 Transform Conference Photo Galleries into Expert Trip Reports
 
 Ever attend a technical conference, take hundreds of photos of slides, and then let them rot in your camera roll? When it's time to write that "Trip Report" to share with your teammates, you're stuck scrolling through a disorganized mess of blurry images.
 
