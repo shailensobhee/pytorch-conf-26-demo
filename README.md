@@ -169,7 +169,7 @@ With our Agents properly configured, our OpenClaw TUI is ready to go to take an 
 For example the `transcribe` agent will process the images, extract text from the images and export to intermediate files. The data is then channeled to the `report-generator` agent who will do the final report writing work - just by magic. Now, you can give fine-grained instructions to the `report-generator` agent on how you want your report. Let's say you are targetting Executives who you not have time to read verbose detailed reports, then you could adapt the agent accordingly to be brief, and write in bullet-point format. What you can do here is limitless :) 
 
 Here's an example promt to get you going:
-`Can you transcribe all the images in /home/jejohnma/.openclaw/workspace/Day/ . And then generate an overall report summary by combining and correlating all the info collected from all the images. Save the report summary in the current directory and share me the path`
+`Can you transcribe all the images in /home/<username>/.openclaw/workspace/Day/ . And then generate an overall report summary by combining and correlating all the info collected from all the images. Save the report summary in the current directory and share me the path`
 
 An example output from OpenClaw will look as below:
 ![openclaw_tui_example](assets/example-output.png)
@@ -186,7 +186,7 @@ The OpenClaw Dashboard is a local web-based "mission control" that offers a visu
 There you can track your tokens consumption and usage which is pretty useful. Especially, if you are using local models in the AMD Developer Cloud, you could compare with the potential costs, if you were to use APIs from intelligence providers. 
 
 Here's what you can expect:
-![Dashboard View](assets/dashboard.png)
+![Dashboard View](assets/example-dashboard.png)
 
 ### 🔧 Troubleshooting & Maintenance
 If you encounter issues or change configurations, use these commands to clean the environment:
