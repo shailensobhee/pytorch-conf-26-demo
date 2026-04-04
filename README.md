@@ -22,105 +22,139 @@ The system utilizes a dual-model, triple-agent approach:
 
 ## 🚀 Setup & Replication
 
-### Step 1: Trigger the vLLM Models
-We run two separate containers to handle the Vision and Reasoning tasks. In case you use gated models, ensure your `HF_TOKEN` is set.
+### Step 1: Get hold of your AMD Developer Cloud GPU instance
 
-In the steps below, we are using two models served by two vLLM instances, and notice the `--gpu-memory-utilization` flag; this is to ensure that we can fit both models into GPU memory. Now, why two models? Well, the VL model excels at VL 🙌 no wonder. The larger model is a strong reasoning model and will do great with drafting an amazing trip report based on the transcribed results. 
+We will keep this readme document digestible! We're in luck, we have a great blog on walking you step by step with securing your AMD GPU Developer Cloud instance 
+https://www.amd.com/en/blogs/2025/introducing-the-amd-developer-cloud.html
+https://www.amd.com/de/developer/resources/technical-articles/2025/how-to-get-started-on-the-amd-developer-cloud-.html
 
-#### Step 1.1: Start the Vision Model (The Eyes) - [Step3-VL-10B](https://huggingface.co/stepfun-ai/Step3-VL-10B)
-<!-- ```bash
-sudo docker run -d -it --ipc=host --network=host --privileged \
---device=/dev/kfd --device=/dev/dri --name vision_demo_check_ocr \
--v <path>:/workspace \
--e HF_TOKEN=${HF_TOKEN} \
--e PYTORCH_ALLOC_CONF=expandable_segments:True \
--e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 \
-vllm/vllm-openai-rocm:latest \
-Qwen/Qwen2-VL-7B-Instruct --port 8001 \
---trust-remote-code --gpu-memory-utilization 0.2 \
---max-model-len 65536 --limit-mm-per-prompt '{"image": 55}' \
---max-num-seqs 64 --max-num-batched-tokens 65536 \
---enable-auto-tool-choice --tool-call-parser=qwen3_xml --host 0.0.0.0
-```
+Once you have your AMD GPU Developer Cloud instance, let's proceed with step 2.
 
-#### Step 1.2: Start the Reasoning Model (The Brain) - Qwen3-Coder
-```bash
-sudo docker run -d -it --ipc=host --network=host --privileged \
---device=/dev/kfd --device=/dev/dri --name vision_demo_check \
--e HF_TOKEN=${HF_TOKEN} \
--e PYTORCH_ALLOC_CONF=expandable_segments:True \
--e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 \
-vllm/vllm-openai-rocm:latest \
---model Qwen/Qwen3-Coder-30B-A3B-Instruct \
---port 8000 --trust-remote-code --gpu-memory-utilization 0.75 \
---max-model-len 231072 --max-num-seqs 16 \
---enable-auto-tool-choice --tool-call-parser qwen3_coder --host 0.0.0.0
-```
+### Step 2: Serve the powerful Gemma4-31B model with vLLM
 
- -->
-We chose `stepfun-ai/Step3-VL-10B` based on the tests as seen in the charts on [HuggingFace](https://huggingface.co/stepfun-ai/Step3-VL-10B). It is a recent 2026 model and it has superior capabilities for perception (e.g OCR) which is needed for understanding our conference photos. 
+Gemma 4 just got released recently and fresh out of the oven, it has impressed us. We want to impress you too. So will show you how to use this great model with OpenClaw! 
+
+`ssh` into your AMD GPU Cloud instance from Step 1 and execute the following commands. Be default you will log in as root, so you should be able to run docker commands. 
+
+`docker pull vllm/vllm-openai-rocm:latest`.
+
+Here's a convenient command blob to get you running right from crawling stage. 
+
 ```bash
 sudo docker run -d -it \
-  --name vision_demo_check_ocr \
+  --name vision_demo \
   --ipc=host \
   --network=host \
   --privileged \
   --device=/dev/kfd \
   --device=/dev/dri \
-  -v <path>/workspace:/workspace \
+  -v /$USER/.openclaw/workspace:/workspace \
+  -e HF_TOKEN=${HF_TOKEN} \
   -e PYTORCH_ALLOC_CONF=expandable_segments:True \
   -e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 \
+  -e GLOO_SOCKET_IFNAME=lo \
+  -e NCCL_SOCKET_IFNAME=lo \
+  --entrypoint /bin/bash \
   vllm/vllm-openai-rocm:latest \
-  stepfun-ai/Step3-VL-10B \
-  --port 8001 \
-  --trust-remote-code \
-  --gpu-memory-utilization 0.2 \
-  --max-model-len 40960 \
-  --limit-mm-per-prompt '{"image": 10}' \
-  --enable-auto-tool-choice \
-  --tool-call-parser qwen3_xml
+  -c "pip install --upgrade transformers && \
+      python3 -m vllm.entrypoints.openai.api_server \
+        --model google/gemma-4-31B-it \
+        --port 8001 \
+        --trust-remote-code \
+        --gpu-memory-utilization 0.8 \
+        --max-model-len 65536 \
+        --limit-mm-per-prompt '{\"image\": 55}' \
+        --max-num-seqs 64 \
+        --max-num-batched-tokens 65536 \
+        --enable-auto-tool-choice \
+        --tool-call-parser gemma4 \
+        --reasoning-parser gemma4 \
+        --host 0.0.0.0"
 ```
-#### Step 1.2: Start the Reasoning Model (The Brain) - Qwen3.5-35B
-`Qwen/Qwen3.5-35B-A3B` is a no-brainer choice here. It's a very strong, very popular state-of-the-art model. Our GPUs love running these great models!
+
+**Note:**  Change the workspace directory (see one of the `-v` arguments) accordingly, it should the path of .openclaw (eg., `/home/<username>/.openclaw/workspace`
+
+You may wish to spend some time and study the above command blob. You'll see we named our docker container as `vision_demo` so, to check the logs, can execute: 
+`docker logs -f vision_demo`. 
+Likewise, to stop and delete the container, you can execute:
+`docker stop vision_demo && docker rm -f vision_demo`
+
+### Step 3: Install OpenClaw
+Here's a conveninent one-liner to install OpenClaw. You will install OpenClaw outside your docker container, naturally :) 
+`curl -fsSL https://openclaw.ai/install.sh | bash`
+
+Now, this readme will skip installation details about OpenClaw. There's ample documentation on this already. However, one key aspect we need to do during the post-installation process (in OpenClaw jargon, it is called `onboarding`), we need to let OpenClaw know where to find our model.
+
+Therefore, we will configure the following when we reach that step about choosing our LLM backend:
+Model: `vLLM`
+Model Name: `google/gemma-4-31B-it`
+vLLM key: `local-vllm` 
+vLLM Provider: `vllm`
+vLLM Port: `http://localhost:8001/v1`
+ 
+In case you are not a root user, make sure you own the `.openclaw` directory: `sudo chown -R $USER:$USER ~/.openclaw`
+
+#### Step 3.1 Further OpenClaw configurations
+The commands below initializes the OpenClaw environment by setting up local authentication, defining vLLM as the primary provider for our pwoerful **Gemma-4 31B** vision model, and configuring tool execution permissions. It establishes the backend connection to our local model server and ensures the necessary directory structure exists. 
 ```bash
-sudo docker run -d -it \
-  --name vision_demo_check \
-  --ipc=host \
-  --network=host \
-  --privileged \
-  --device=/dev/kfd \
-  --device=/dev/dri \
-  --shm-size 16g \
-  -e PYTORCH_ALLOC_CONF=expandable_segments:True \
-  vllm/vllm-openai-rocm:latest \
-  Qwen/Qwen3.5-35B-A3B \
-  --port 8000 \
-  --trust-remote-code \
-  --gpu-memory-utilization 0.75 \
-  --max-model-len 32768 \
-  --enable-auto-tool-choice \
-  --tool-call-parser qwen3_coder
+openclaw config set gateway.auth.token "claw123"  
+openclaw config set gateway.mode "local"  
+openclaw config set agents.defaults.model.primary "vllm/google/gemma-4-31B-it" 
+openclaw config set agents.defaults.imageModel.primary "vllm/google/gemma-4-31B-it" 
+openclaw config set models.providers.vllm '{"baseUrl": "http://localhost:8001/v1","apiKey": "local-vllm","api": "openai-completions","models": [{"id": "google/gemma-4-31B-it","name": "Gemma-4-Vision","input": ["text", "image"],"compat": {"supportsUsageInStreaming": true}}]}' 
+openclaw config set tools.allow '["group:fs", "exec", "sessions_spawn", "subagents"]'   
+openclaw config set tools.exec.ask "off"  
+openclaw config set tools.exec.security "full" 
+mkdir -p ~/.openclaw 
 ```
-
-
-### Step 2: Prepare the Workspace
-Place your gazillion conference photos you took, yes the ones you never intended to watch again, a directory within your workspace directory. Your workspace directory may most likely be within the `/home/<username>.openclaw/` folder. So, don't worry, even if you won't consult the photos again, OpenClaw will do that for you :) . 
+While you should generally be careful giving too much pwoer to OpenClaw, here, we are actually configuring OpenClaw in a way, saying "Don't ask for permission before running commands or touching files, but keep the full security restrictions active." This will allow `exec` and `fs` to work, as we will be opening images, and writing reports to disk. 
 
 ```bash
-mkdir -p <openclaw_path>/pytorch_conference/
-cp ~/sample_images/*.jpg <openclaw_path>/pytorch_conference/
+cat <<EOF > ~/.openclaw/exec-approvals.json 
+{ 
+  "security": "full", 
+  "ask": "off", 
+  "askFallback": "full", 
+  "groups": { 
+    "fs": { 
+      "security": "full", 
+      "ask": "off" 
+    }, 
+    "exec": { 
+      "security": "full", 
+      "ask": "off" 
+    } 
+  } 
+} 
+EOF 
+```
+We then start the OpenClaw Gateway service:
+`systemctl --user start openclaw-gateway.service`
+
+In OpenClaw’s "Local-First" architecture, the gateway doesn't trust new connections by default. When a new device tries to connect - for example, if you open the web dashboard or try to link the OpenClaw mobile app, it generates a unique Request ID.
+
+Check if you have any devices in the `Pending List` section. If yes, you can simply run this shortcut command `openclaw devices approve --latest` to add the latest device, especially if you have only one device in the Pending List. 
+
+
+### Step 4: Prepare the Workspace
+Place your gazillion conference photos you took - yes, the ones you never intended to watch again - in a directory within your workspace directory. Your workspace directory may most likely be within the `/home/<username>.openclaw/` folder. So, don't worry, even if you won't consult the photos again, OpenClaw will do that for you :) . 
+
+In our example, we are goign to write a Trip Report from last year's PyTorch Conference Day. We create a folder called `Day` for our pictures. 
+```bash
+mkdir -p <openclaw_path>/workspace/Day/
+cp ~/sample_images/*.jpg <openclaw_path>/workspace/Day/
 ```
 
 
-### Step 3: Configure OpenClaw
+### Step 5: Configure OpenClaw
 Update the configuration files and agent instructions to enable the multi-agent delegation.
 
-Replace `config.json` and `openclaw.json` in `~/.openclaw/`.
+Replace `config.json` and `openclaw.json` in `~/.openclaw/`. Use the ones shipped in this Github repository. 
 
-Ensure `AGENTS.md` instructions are updated for the orchestrator, transcriber, and report-generator.
+**Highly Advisable** Read the `AGENTS.md` for each of the three agents in our demo : `orchestrator`, `transcriber`, and `report-generator`. This will give you an understanding of how the OpenClaw agents behave. There are some edits to do too, for example in the `AGENTS.md`, you will need to adapt the `<openclaw_path>`. 
 
-### Step 4: Final Execution
-Restart the gateway and launch the Terminal User Interface (TUI).
+### Step 6: Final Execution - Launch the Terminal UI (TUI) 
+Since we made some modifications to the agents' guts and brains, we restart the gateway and launch the Terminal User Interface (TUI).
 
 ```bash
 systemctl --user restart openclaw-gateway
@@ -128,16 +162,18 @@ OPENCLAW_AUTO_APPROVE=true openclaw tui --token "claw123"
 ```
 
 #### 📝 Running the Demo
-Inside the OpenClaw TUI, run the following commands to trigger the pipeline:
+With our Agents properly configured, our OpenClaw TUI is ready to go to take an ask to process our Conference pictures and write a report. Let's give it a try with the sample text below. OpenClaw is now smart enough to engage the right expert agents to do the work. Example the `transcribe` agent will process the images, extract text from the images and export to intermediate files. The data is then channeled to the `report-generator` agent who will do the final report writing work - just by magic. Now, you can give fine-grained instructions to the `report-generator` agent on how you want your report. For example, are you targetting Executives who you not have time to read verbose detailed reports, then you could adapt the agent accordingly to be brief, and write in bullet-point format. What you can do here is limitless :) 
 
-1. **Reset the session:** `/reset`
-2. **Select the Orchestrator:** `/agent orchestrator`
-3. **Execute the Prompt:** "Transcribe each and every image in `<openclaw_path>/pytorch_conference/` by individually invoking `transcriber-agent`. Generate a structured technical report from these transcriptions and save it."
+Here's an example promt to get you going:
+`Can you transcribe all the images in /home/jejohnma/.openclaw/workspace/Day/ . And then generate an overall report summary by combining and correlating all the info collected from all the images. Save the report summary in the current directory and share me the path`
+
+An example output from OpenClaw will look as below:
+![openclaw_tui_example](assets/example-output.png)
 
 Can you believe it? Just a simple sentence, simple command, and you have a small army of agents that get to work, to view these images you wouldn't ever watch, understand them, and write you a summary (aka the Trip Report) for you? 
 
 Here's a sample of what you can expect:
-![Trip Report Sample image](assets/report_sample.png)
+![Trip Report Sample image](assets/example-output-report.png)
 
 
 ### The Useful OpenClaw Dashboard
@@ -165,17 +201,17 @@ rm -f ~/.openclaw/gateway.lock
 openclaw reset --scope config+creds+sessions --yes
 
 # Restart Gateway
+systemctl --user stop openclaw-gateway.service  
+sudo fuser -k 18789/tcp
 systemctl --user restart openclaw-gateway
 ```
 
-#### Device Approval:
+## 📅 The final take on this OpenClaw demo
 
-```bash
-openclaw devices list
-openclaw devices approve <YOUR_DEVICE_ID>
-```
+When processing large datasets (e.g., a directory of 50+ images) for automated reporting, there are traditionally two main approaches:
+1.	**Manual Processing**: Human review and manual data entry, which is non-scalable and prone to error.
+2.	**Custom Scripting**: Developing dedicated Python scripts to interface with model APIs and handle directory I/O - a process that requires significant development overhead and maintenance.
 
-## 📅 Updates
-
-**April 3**: Added support for Gemma 4 (31B) as an alternative reasoning engine and optimized vLLM parameters for higher batch processing of images.
+#### The OpenClaw Advantage
+OpenClaw introduces a third, more efficient paradigm: Natural Language Orchestration. Instead of writing boilerplate code to link directories and manage model calls, we provide a high-level narrative of the required task.
 
