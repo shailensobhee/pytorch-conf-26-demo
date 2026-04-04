@@ -1,30 +1,34 @@
 {
+  "gateway": {
+    "auth": {
+      "token": "claw123"
+    },
+    "mode": "local"
+  },
   "meta": {
     "lastTouchedVersion": "2026.3.31",
-    "lastTouchedAt": "2026-04-02T20:02:32.546Z"
+    "lastTouchedAt": "2026-04-04T10:40:05.048Z"
   },
-  "approvals": {},
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "vllm/google/gemma-4-31B-it"
+      },
+      "imageModel": {
+        "primary": "vllm/google/gemma-4-31B-it"
+      }
+    }
+  },
   "models": {
     "providers": {
-      "vllm-coder": {
-        "baseUrl": "http://VM1:8000/v1",
-        "apiKey": "local-vllm",
-        "api": "openai-responses",
-        "models": [
-          {
-            "id": "Qwen/Qwen3-Coder-30B-A3B-Instruct",
-            "name": "Qwen3-Coder"
-          }
-        ]
-      },
-      "vllm-vision": {
+      "vllm": {
         "baseUrl": "http://localhost:8001/v1",
         "apiKey": "local-vllm",
-        "api": "openai-responses",
+        "api": "openai-completions",
         "models": [
           {
-            "id": "Qwen/Qwen2-VL-7B-Instruct",
-            "name": "Qwen-Vision",
+            "id": "google/gemma-4-31B-it",
+            "name": "Gemma-4-Vision",
             "input": [
               "text",
               "image"
@@ -34,98 +38,16 @@
       }
     }
   },
-  "agents": {
-    "defaults": {
-      "model": {
-        "primary": "vllm-coder/Qwen/Qwen3-Coder-30B-A3B-Instruct"
-      },
-      "workspace": "<path>/workspace",
-      "maxConcurrent": 4,
-      "subagents": {
-        "maxConcurrent": 8,
-        "announceTimeoutMs": 300000
-      }
-    },
-    "list": [
-      {
-        "id": "orchestrator-agent",
-        "name": "Orchestrator",
-        "workspace": "<path>/orchestrator",
-        "agentDir": "<path>/agents/orchestrator-agent/agent",
-        "model": "vllm-coder/Qwen/Qwen3-Coder-30B-A3B-Instruct",
-        "subagents": {
-          "allowAgents": [
-            "transcriber-agent",
-            "report-generator"
-          ]
-        },
-        "tools": {
-          "allow": [
-            "group:fs",
-            "exec",
-            "sessions_spawn",
-            "subagents"
-          ]
-        }
-      },
-      {
-        "id": "transcriber-agent",
-        "name": "Transcriber",
-        "workspace": "<path>/workspace/orchestrator",
-        "agentDir": "<path>/agents/transcriber-agent/agent",
-
-        "model": "vllm-vision/Qwen/Qwen2-VL-7B-Instruct",
-        "tools": {
-          "allow": [
-            "group:fs"
-          ]
-        }
-      },
-      {
-        "id": "report-generator",
-        "name": "Report Generator",
-        "workspace": "<path>/workspace/orchestrator",
-        "agentDir": "<path>/agents/report-generator/agent",
-
-        "model": "vllm-coder/Qwen/Qwen3-Coder-30B-A3B-Instruct",
-        "tools": {
-          "allow": [
-            "group:fs"
-          ]
-        }
-      }
-    ]
-  },
   "tools": {
     "allow": [
-      "group:web",
       "group:fs",
       "exec",
       "sessions_spawn",
       "subagents"
     ],
     "exec": {
-      "security": "full",
-      "ask": "off"
+      "ask": "off",
+      "security": "full"
     }
-  },
-  "commands": {
-    "native": "auto",
-    "nativeSkills": "auto",
-    "restart": true,
-    "ownerDisplay": "raw"
-  },
-  "gateway": {
-    "port": 18789,
-    "mode": "local",
-    "auth": {
-      "token": "claw123"
-    }
-  },
-  "wizard": {
-    "lastRunAt": "2026-04-02T20:02:32.540Z",
-    "lastRunVersion": "2026.3.31",
-    "lastRunCommand": "doctor",
-    "lastRunMode": "local"
   }
 }
