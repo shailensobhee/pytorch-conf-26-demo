@@ -73,6 +73,7 @@
         "name": "Transcriber",
         "workspace": "<path>/workspace/orchestrator",
         "agentDir": "<path>/agents/transcriber-agent/agent",
+
         "model": "vllm-vision/Qwen/Qwen2-VL-7B-Instruct",
         "tools": {
           "allow": [
@@ -85,6 +86,7 @@
         "name": "Report Generator",
         "workspace": "<path>/workspace/orchestrator",
         "agentDir": "<path>/agents/report-generator/agent",
+
         "model": "vllm-coder/Qwen/Qwen3-Coder-30B-A3B-Instruct",
         "tools": {
           "allow": [
