@@ -24,9 +24,9 @@ The system utilizes a dual-model, triple-agent approach:
 
 ### Step 1: Get hold of your AMD Developer Cloud GPU instance
 
-We will keep this readme document digestible! We're in luck, we have a great blog on walking you step by step with securing your AMD GPU Developer Cloud instance 
-https://www.amd.com/en/blogs/2025/introducing-the-amd-developer-cloud.html
-https://www.amd.com/de/developer/resources/technical-articles/2025/how-to-get-started-on-the-amd-developer-cloud-.html
+We will keep this readme document digestible! We're in luck, we have two great blogs on walking you step by step with securing your AMD GPU Developer Cloud instance. Consult: 
+1. [Introducing the AMD Developer Cloud](https://www.amd.com/en/blogs/2025/introducing-the-amd-developer-cloud.html)
+2.  [Getting Started on the AMD Developer Cloud](https://www.amd.com/de/developer/resources/technical-articles/2025/how-to-get-started-on-the-amd-developer-cloud-.html)
 
 Once you have your AMD GPU Developer Cloud instance, let's proceed with step 2.
 
@@ -162,7 +162,9 @@ OPENCLAW_AUTO_APPROVE=true openclaw tui --token "claw123"
 ```
 
 #### 📝 Running the Demo
-With our Agents properly configured, our OpenClaw TUI is ready to go to take an ask to process our Conference pictures and write a report. Let's give it a try with the sample text below. OpenClaw is now smart enough to engage the right expert agents to do the work. Example the `transcribe` agent will process the images, extract text from the images and export to intermediate files. The data is then channeled to the `report-generator` agent who will do the final report writing work - just by magic. Now, you can give fine-grained instructions to the `report-generator` agent on how you want your report. For example, are you targetting Executives who you not have time to read verbose detailed reports, then you could adapt the agent accordingly to be brief, and write in bullet-point format. What you can do here is limitless :) 
+With our Agents properly configured, our OpenClaw TUI is ready to go to take an ask to process our Conference pictures and write a report. Let's give it a try with the sample text below. OpenClaw is now smart enough to engage the right expert agents to do the work. 
+
+For example the `transcribe` agent will process the images, extract text from the images and export to intermediate files. The data is then channeled to the `report-generator` agent who will do the final report writing work - just by magic. Now, you can give fine-grained instructions to the `report-generator` agent on how you want your report. Let's say you are targetting Executives who you not have time to read verbose detailed reports, then you could adapt the agent accordingly to be brief, and write in bullet-point format. What you can do here is limitless :) 
 
 Here's an example promt to get you going:
 `Can you transcribe all the images in /home/jejohnma/.openclaw/workspace/Day/ . And then generate an overall report summary by combining and correlating all the info collected from all the images. Save the report summary in the current directory and share me the path`
