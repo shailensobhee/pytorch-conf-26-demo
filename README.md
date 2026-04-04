@@ -1,4 +1,5 @@
 # OpenClaw Lens-to-Log:
+#### Powered by Gemma 4 😎
 ### 📸 Transform Conference Photo Galleries into Expert Trip Reports
 
 Ever attend a technical conference, take hundreds of photos of slides, and then let them rot in your camera roll? When it's time to write that "Trip Report" to share with your teammates, you're stuck scrolling through a disorganized mess of blurry images.
@@ -9,10 +10,11 @@ Ever attend a technical conference, take hundreds of photos of slides, and then 
 
 ## 🤖 The Architecture
 
-The system utilizes a dual-model, triple-agent approach:
+We want to have token freedom and be able to generate as many tokens as we want. That's why we tap the AMD GPU Developer Cloud instance, right? Now, we gave Gemma 4, the most dense 31B model and were impressed by it, being able to also fit in just one MI300X GPU with 192GB of VRAM. We want you to also experience that! 
 
-* **Model 1 (The Brain):** A code-based reasoning model (Qwen/Gemma) for orchestration and report synthesis.
-* **Model 2 (The Eyes):** A vision-based model (Qwen-VL) for high-accuracy image transcription and OCR.
+Our OpenClaw demo uses one vLLM serving of Gemma-4 and a triple-agent approach:
+
+* **Model**: The Brain and Eyes in our project: `Gemma-4-31B-it`, a multimodal model powerhouse supports text, images, and audio inputs and is optimized for advanced reasoning and agentic workflows 
 * **The Agents:**
     1.  **Orchestrator Agent:** The conductor. It manages the workflow and delegates tasks.
     2.  **Transcriber Agent:** Processes individual images and extracts technical content.
