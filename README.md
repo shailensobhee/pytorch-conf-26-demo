@@ -186,7 +186,7 @@ The OpenClaw Dashboard is a local web-based "mission control" that offers a visu
 There you can track your tokens consumption and usage which is pretty useful. Especially, if you are using local models in the AMD Developer Cloud, you could compare with the potential costs, if you were to use APIs from intelligence providers. 
 
 Here's what you can expect:
-![Dashboard View](assets/example-dashboard.png)
+![Dashboard View](assets/dashboard.png)
 
 ### 🔧 Troubleshooting & Maintenance
 If you encounter issues or change configurations, use these commands to clean the environment:
