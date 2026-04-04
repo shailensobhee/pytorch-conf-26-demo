@@ -104,11 +104,11 @@ sudo docker run -d -it \
 
 
 ### Step 2: Prepare the Workspace
-Place your gazillion conference photos you took, yes the ones you never intended to watch again, a directory within your workspace directory. Your workspace directory may most likely be within the `/home/<username>.openclaw/` folder. So, don't worry, even if you won't consult the photos again, OpenClaw will do that for you. 
+Place your gazillion conference photos you took, yes the ones you never intended to watch again, a directory within your workspace directory. Your workspace directory may most likely be within the `/home/<username>.openclaw/` folder. So, don't worry, even if you won't consult the photos again, OpenClaw will do that for you :) . 
 
 ```bash
-mkdir -p <path>/pytorch_conference/
-cp ~/my_photos/*.jpg <path>/pytorch_conference/
+mkdir -p <openclaw_path>/pytorch_conference/
+cp ~/sample_images/*.jpg <openclaw_path>/pytorch_conference/
 ```
 
 
@@ -132,7 +132,7 @@ Inside the OpenClaw TUI, run the following commands to trigger the pipeline:
 
 1. **Reset the session:** `/reset`
 2. **Select the Orchestrator:** `/agent orchestrator`
-3. **Execute the Prompt:** "Transcribe each and every image in `<path>/pytorch_conference/` by individually invoking `transcriber-agent`. Generate a structured technical report from these transcriptions and save it."
+3. **Execute the Prompt:** "Transcribe each and every image in `<openclaw_path>/pytorch_conference/` by individually invoking `transcriber-agent`. Generate a structured technical report from these transcriptions and save it."
 
 Can you believe it? Just a simple sentence, simple command, and you have a small army of agents that get to work, to view these images you wouldn't ever watch, understand them, and write you a summary (aka the Trip Report) for you? 
 
