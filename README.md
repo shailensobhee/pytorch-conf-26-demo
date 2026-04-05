@@ -4,7 +4,7 @@
 
 Ever attend a technical conference, take hundreds of photos of slides, and then let them rot in your camera roll? When it's time to write that "Trip Report" to share with your teammates, you're stuck scrolling through a disorganized mess of blurry images.
 
-**OpenClaw🦞** is here solves this. This demo uses a multi-agent orchestration layer combined with state-of-the-art Vision Language Models (VLM) and Reasoning models to automatically transcribe your conference photos and synthesize them into a structured, professional technical report.
+**OpenClaw🦞** is here to solve this. This demo uses a multi-agent orchestration layer combined with state-of-the-art Vision Language Models (VLM) and Reasoning models to automatically transcribe your conference photos and synthesize them into a structured, professional technical report.
 
 ---
 
@@ -36,7 +36,7 @@ Once you have your AMD GPU Developer Cloud instance, let's proceed with step 2.
 
 Gemma 4 just got released recently and fresh out of the oven, it has impressed us. We want to impress you too. So will show you how to use this great model with OpenClaw! 
 
-`ssh` into your AMD GPU Cloud instance from Step 1 and execute the following commands. Be default you will log in as root, so you should be able to run docker commands. 
+`ssh` into your AMD GPU Cloud instance from Step 1 and execute the following commands. By default you will log in as root, so you should be able to run docker commands. 
 
 `docker pull vllm/vllm-openai-rocm:latest`.
 
@@ -50,7 +50,7 @@ sudo docker run -d -it \
   --privileged \
   --device=/dev/kfd \
   --device=/dev/dri \
-  -v /$USER/.openclaw/workspace:/workspace \
+  -v /$HOME/.openclaw/workspace:/workspace \
   -e HF_TOKEN=${HF_TOKEN} \
   -e PYTORCH_ALLOC_CONF=expandable_segments:True \
   -e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 \
@@ -82,7 +82,7 @@ Likewise, to stop and delete the container, you can execute:
 `docker stop vision_demo && docker rm -f vision_demo`
 
 ### Step 3: Install OpenClaw
-Here's a conveninent one-liner to install OpenClaw. You will install OpenClaw outside your docker container, naturally :) 
+Here's a convenient one-liner to install OpenClaw. You will install OpenClaw outside your docker container, naturally :) 
 `curl -fsSL https://openclaw.ai/install.sh | bash`
 
 Now, this readme will skip installation details about OpenClaw. There's ample documentation on this already. However, one key aspect we need to do during the post-installation process (in OpenClaw jargon, it is called `onboarding`), we need to let OpenClaw know where to find our model.
@@ -97,7 +97,7 @@ vLLM Port: `http://localhost:8001/v1`
 In case you are not a root user, make sure you own the `.openclaw` directory: `sudo chown -R $USER:$USER ~/.openclaw`
 
 #### Step 3.1 Further OpenClaw configurations
-The commands below initializes the OpenClaw environment by setting up local authentication, defining vLLM as the primary provider for our pwoerful **Gemma-4 31B** vision model, and configuring tool execution permissions. It establishes the backend connection to our local model server and ensures the necessary directory structure exists. 
+The commands below initializes the OpenClaw environment by setting up local authentication, defining vLLM as the primary provider for our powerful **Gemma-4 31B** vision model, and configuring tool execution permissions. It establishes the backend connection to our local model server and ensures the necessary directory structure exists. 
 ```bash
 openclaw config set gateway.auth.token "claw123"  
 openclaw config set gateway.mode "local"  
@@ -109,7 +109,7 @@ openclaw config set tools.exec.ask "off"
 openclaw config set tools.exec.security "full" 
 mkdir -p ~/.openclaw 
 ```
-While you should generally be careful giving too much pwoer to OpenClaw, here, we are actually configuring OpenClaw in a way, saying "Don't ask for permission before running commands or touching files, but keep the full security restrictions active." This will allow `exec` and `fs` to work, as we will be opening images, and writing reports to disk. 
+While you should generally be careful giving too much power to OpenClaw, here, we are actually configuring OpenClaw in a way, saying "Don't ask for permission before running commands or touching files, but keep the full security restrictions active." This will allow `exec` and `fs` to work, as we will be opening images, and writing reports to disk. 
 
 ```bash
 cat <<EOF > ~/.openclaw/exec-approvals.json 
@@ -130,6 +130,29 @@ cat <<EOF > ~/.openclaw/exec-approvals.json
 } 
 EOF 
 ```
+
+**Defining and Registering Agents**
+OpenClaw uses a hierarchical model where a Primary Agent (Orchestrator) can delegate tasks to specialized Subagents (Transcriber, Report-Generator).
+
+```bash
+# Ensure the destination directories exist
+mkdir -p ~/.openclaw/agents/orchestrator
+mkdir -p ~/.openclaw/agents/transcriber
+mkdir -p ~/.openclaw/agents/report-generator
+
+# Copy the identity and souls from your local repository to the OpenClaw config path
+cp -r ./agents/* ~/.openclaw/agents/
+```
+
+Register agents in global config
+```bash
+openclaw config set agents.list '[
+  {"id": "orchestrator", "workspace": "~/.openclaw/agents/orchestrator"},
+  {"id": "transcriber", "workspace": "~/.openclaw/agents/transcriber"},
+  {"id": "report-generator", "workspace": "~/.openclaw/agents/report-generator"}
+]'
+```
+
 We then start the OpenClaw Gateway service:
 `systemctl --user start openclaw-gateway.service`
 
@@ -141,10 +164,10 @@ Check if you have any devices in the `Pending List` section. If yes, you can sim
 ### Step 4: Prepare the Workspace
 Place your gazillion conference photos you took - yes, the ones you never intended to watch again - in a directory within your workspace directory. Your workspace directory may most likely be within the `/home/<username>.openclaw/` folder. So, don't worry, even if you won't consult the photos again, OpenClaw will do that for you :) . 
 
-In our example, we are goign to write a Trip Report from last year's PyTorch Conference Day. We create a folder called `Day` for our pictures. 
+In our example, we are going to write a Trip Report from last year's PyTorch Conference Day. We create a folder called `Day` for our pictures. 
 ```bash
-mkdir -p <openclaw_path>/workspace/Day/
-cp ~/sample_images/*.jpg <openclaw_path>/workspace/Day/
+mkdir -p ~/.openclaw/workspace/Day/
+cp ~/sample_images/*.jpg ~/.openclaw/workspace/Day/
 ```
 
 
@@ -153,7 +176,7 @@ Update the configuration files and agent instructions to enable the multi-agent 
 
 Replace `config.json` and `openclaw.json` in `~/.openclaw/`. Use the ones shipped in this Github repository. 
 
-**Highly Advisable** Read the `AGENTS.md` for each of the three agents in our demo : `orchestrator`, `transcriber`, and `report-generator`. This will give you an understanding of how the OpenClaw agents behave. There are some edits to do too, for example in the `AGENTS.md`, you will need to adapt the `<openclaw_path>`. 
+**Highly Advisable:** Read the `SOUL.md` for each of the three agents in our demo: `orchestrator`, `transcriber`, and `report-generator`. This will give you an understanding of how the OpenClaw agents "think" and process data. You may need to adapt any hardcoded paths in these `SOUL.md` files to match your local environment (e.g., replacing `/home/<username>` with your actual `<openclaw_path>`). 
 
 ### Step 6: Final Execution - Launch the Terminal UI (TUI) 
 Since we made some modifications to the agents' guts and brains, we restart the gateway and launch the Terminal User Interface (TUI).
@@ -168,7 +191,7 @@ With our Agents properly configured, our OpenClaw TUI is ready to go to take an 
 
 For example the `transcribe` agent will process the images, extract text from the images and export to intermediate files. The data is then channeled to the `report-generator` agent who will do the final report writing work - just by magic. Now, you can give fine-grained instructions to the `report-generator` agent on how you want your report. Let's say you are targetting Executives who you not have time to read verbose detailed reports, then you could adapt the agent accordingly to be brief, and write in bullet-point format. What you can do here is limitless :) 
 
-Here's an example promt to get you going:
+Here's an example prompt to get you going:
 `Can you transcribe all the images in /home/<username>/.openclaw/workspace/Day/ . And then generate an overall report summary by combining and correlating all the info collected from all the images. Save the report summary in the current directory and share me the path`
 
 An example output from OpenClaw will look as below:

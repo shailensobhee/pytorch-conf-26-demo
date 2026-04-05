@@ -7,7 +7,7 @@
   },
   "meta": {
     "lastTouchedVersion": "2026.3.31",
-    "lastTouchedAt": "2026-04-04T10:40:05.048Z"
+    "lastTouchedAt": "2026-04-05T08:49:22.799Z"
   },
   "agents": {
     "defaults": {
@@ -17,7 +17,21 @@
       "imageModel": {
         "primary": "vllm/google/gemma-4-31B-it"
       }
-    }
+    },
+    "list": [
+      {
+        "id": "orchestrator",
+        "workspace": "~/.openclaw/agents/orchestrator"
+      },
+      {
+        "id": "transcriber",
+        "workspace": "~/.openclaw/agents/transcriber"
+      },
+      {
+        "id": "report-generator",
+        "workspace": "~/.openclaw/agents/report-generator"
+      }
+    ]
   },
   "models": {
     "providers": {
@@ -32,7 +46,10 @@
             "input": [
               "text",
               "image"
-            ]
+            ],
+            "compat": {
+              "supportsUsageInStreaming": true
+            }
           }
         ]
       }
