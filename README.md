@@ -97,60 +97,21 @@ vLLM Port: `http://localhost:8001/v1`
 In case you are not a root user, make sure you own the `.openclaw` directory: `sudo chown -R $USER:$USER ~/.openclaw`
 
 #### Step 3.1 Further OpenClaw configurations
-The commands below initializes the OpenClaw environment by setting up local authentication, defining vLLM as the primary provider for our powerful **Gemma-4 31B** vision model, and configuring tool execution permissions. It establishes the backend connection to our local model server and ensures the necessary directory structure exists. 
-```bash
-openclaw config set gateway.auth.token "claw123"  
-openclaw config set gateway.mode "local"  
-openclaw config set agents.defaults.model.primary "vllm/google/gemma-4-31B-it" 
-openclaw config set agents.defaults.imageModel.primary "vllm/google/gemma-4-31B-it" 
-openclaw config set models.providers.vllm '{"baseUrl": "http://localhost:8001/v1","apiKey": "local-vllm","api": "openai-completions","models": [{"id": "google/gemma-4-31B-it","name": "Gemma-4-Vision","input": ["text", "image"],"compat": {"supportsUsageInStreaming": true}}]}' 
-openclaw config set tools.allow '["group:fs", "exec", "sessions_spawn", "subagents"]'   
-openclaw config set tools.exec.ask "off"  
-openclaw config set tools.exec.security "full" 
-mkdir -p ~/.openclaw 
-```
-While you should generally be careful giving too much power to OpenClaw, here, we are actually configuring OpenClaw in a way, saying "Don't ask for permission before running commands or touching files, but keep the full security restrictions active." This will allow `exec` and `fs` to work, as we will be opening images, and writing reports to disk. 
+Instead of manual configuration, we use a pre-defined openclaw.json to handle the core environment logic. This file defines vLLM as the primary provider for our **Gemma-4 31B** vision model, sets up local authentication, and establishes the backend connection to our local model server.
+
+**Syncing Configuration and Agents**
+OpenClaw uses a hierarchical model where a Primary Agent (Orchestrator) delegates tasks to specialized Subagents. Run the following to sync the config and agent "souls":
 
 ```bash
-cat <<EOF > ~/.openclaw/exec-approvals.json 
-{ 
-  "security": "full", 
-  "ask": "off", 
-  "askFallback": "full", 
-  "groups": { 
-    "fs": { 
-      "security": "full", 
-      "ask": "off" 
-    }, 
-    "exec": { 
-      "security": "full", 
-      "ask": "off" 
-    } 
-  } 
-} 
-EOF 
-```
+# Create the base OpenClaw directory
+mkdir -p ~/.openclaw
 
-**Defining and Registering Agents**
-OpenClaw uses a hierarchical model where a Primary Agent (Orchestrator) can delegate tasks to specialized Subagents (Transcriber, Report-Generator).
+# Copy global configuration and security policies
+cp openclaw.json ~/.openclaw/
+cp exec-approvals.json ~/.openclaw/
 
-```bash
-# Ensure the destination directories exist
-mkdir -p ~/.openclaw/agents/orchestrator
-mkdir -p ~/.openclaw/agents/transcriber
-mkdir -p ~/.openclaw/agents/report-generator
-
-# Copy the identity and souls from your local repository to the OpenClaw config path
-cp -r ./agents/* ~/.openclaw/agents/
-```
-
-Register agents in global config
-```bash
-openclaw config set agents.list '[
-  {"id": "orchestrator", "workspace": "~/.openclaw/agents/orchestrator"},
-  {"id": "transcriber", "workspace": "~/.openclaw/agents/transcriber"},
-  {"id": "report-generator", "workspace": "~/.openclaw/agents/report-generator"}
-]'
+# Sync specialized agents (Orchestrator, Transcriber, Report-Generator)
+cp -r ./agents ~/.openclaw/
 ```
 
 We then start the OpenClaw Gateway service:

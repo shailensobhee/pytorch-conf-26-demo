@@ -6,8 +6,15 @@
     "mode": "local"
   },
   "meta": {
-    "lastTouchedVersion": "2026.3.31",
-    "lastTouchedAt": "2026-04-05T08:49:22.799Z"
+    "lastTouchedVersion": "2026.4.2",
+    "lastTouchedAt": "2026-04-13T05:30:30.474Z"
+  },
+  "messages": {
+    "queue": {
+      "mode": "steer+backlog",
+      "cap": 1000,
+      "drop": "summarize"
+    }
   },
   "agents": {
     "defaults": {
@@ -29,7 +36,9 @@
       },
       {
         "id": "report-generator",
-        "workspace": "~/.openclaw/agents/report-generator"
+        "workspace": "~/.openclaw/agents/report-generator",
+        "thinkingDefault": "high",
+        "reasoningDefault": "off"
       }
     ]
   },
