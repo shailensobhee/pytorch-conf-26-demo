@@ -23,6 +23,9 @@
       },
       "imageModel": {
         "primary": "vllm/google/gemma-4-31B-it"
+      },
+      "pdfModel": {
+        "primary": "vllm/google/gemma-4-31B-it"
       }
     },
     "list": [
