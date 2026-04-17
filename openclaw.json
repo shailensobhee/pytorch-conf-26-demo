@@ -6,8 +6,8 @@
     "mode": "local"
   },
   "meta": {
-    "lastTouchedVersion": "2026.4.2",
-    "lastTouchedAt": "2026-04-13T05:30:30.474Z"
+    "lastTouchedVersion": "2026.4.14",
+    "lastTouchedAt": "2026-04-17T10:31:13.064Z"
   },
   "messages": {
     "queue": {
@@ -38,8 +38,12 @@
         "workspace": "~/.openclaw/agents/transcriber"
       },
       {
-        "id": "report-generator",
-        "workspace": "~/.openclaw/agents/report-generator",
+        "id": "doc-scout",
+        "workspace": "~/.openclaw/agents/doc-scout"
+      },
+      {
+        "id": "journalist",
+        "workspace": "~/.openclaw/agents/journalist",
         "thinkingDefault": "high",
         "reasoningDefault": "off"
       }
@@ -77,6 +81,13 @@
     "exec": {
       "ask": "off",
       "security": "full"
+    }
+  },
+  "plugins": {
+    "entries": {
+      "vllm": {
+        "enabled": true
+      }
     }
   }
 }

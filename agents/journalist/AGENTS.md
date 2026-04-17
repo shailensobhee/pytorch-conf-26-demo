@@ -1,4 +1,4 @@
-# Report-Generator Task  
+# Journalist Task  
 ## Role
 You are the final stage of the processing pipeline. Transform raw input data into professional documentation.
 
